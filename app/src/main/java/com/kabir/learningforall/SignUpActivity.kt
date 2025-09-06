@@ -1,14 +1,174 @@
 package com.kabir.learningforall
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
+import android.widget.ImageButton
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.checkbox.MaterialCheckBox
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 
 class SignUpActivity : AppCompatActivity() {
+
+    private lateinit var backButton: ImageButton
+    private lateinit var fullNameInputLayout: TextInputLayout
+    private lateinit var emailInputLayout: TextInputLayout
+    private lateinit var phoneInputLayout: TextInputLayout
+    private lateinit var passwordInputLayout: TextInputLayout
+    private lateinit var confirmPasswordInputLayout: TextInputLayout
+    private lateinit var fullNameEditText: TextInputEditText
+    private lateinit var emailEditText: TextInputEditText
+    private lateinit var phoneEditText: TextInputEditText
+    private lateinit var passwordEditText: TextInputEditText
+    private lateinit var confirmPasswordEditText: TextInputEditText
+    private lateinit var termsCheckbox: MaterialCheckBox
+    private lateinit var termsLink: TextView
+    private lateinit var signUpButton: MaterialButton
+    private lateinit var signInLink: TextView
+    private lateinit var googleSignUpButton: MaterialButton
+    private lateinit var facebookSignUpButton: MaterialButton
+    private val MINIMUM_NAME_LENGTH: Int = 2
+    private val MINIMUM_PASSWORD_LENGTH: Int = 6
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
+
+        setUpViews()
+        setUpClickListeners()
+        animateViews()
     }
+
+    private fun setUpViews() {
+        backButton = findViewById(R.id.backButton)
+        fullNameInputLayout = findViewById(R.id.fullNameInputLayout)
+        emailInputLayout = findViewById(R.id.emailInputLayout)
+        phoneInputLayout = findViewById(R.id.phoneInputLayout)
+        passwordInputLayout = findViewById(R.id.passwordInputLayout)
+        confirmPasswordInputLayout = findViewById(R.id.confirmPasswordInputLayout)
+        fullNameEditText = findViewById(R.id.fullNameEditText)
+        emailEditText = findViewById(R.id.emailEditText)
+        phoneEditText = findViewById(R.id.phoneEditText)
+        passwordEditText = findViewById(R.id.passwordEditText)
+        confirmPasswordEditText = findViewById(R.id.confirmPasswordEditText)
+        termsCheckbox = findViewById(R.id.termsCheckbox)
+        termsLink = findViewById(R.id.termsLink)
+        signUpButton = findViewById(R.id.signUpButton)
+        signInLink = findViewById(R.id.signInLink)
+        googleSignUpButton = findViewById(R.id.googleSignUpButton)
+        facebookSignUpButton = findViewById(R.id.facebookSignUpButton)
+    }
+
+    private fun setUpClickListeners() {
+        backButton.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+        signInLink.setOnClickListener {
+            goToSignIn()
+        }
+        termsCheckbox.setOnCheckedChangeListener { _, _ ->
+            signUpButton.isEnabled = validateInputs()
+        }
+
+        googleSignUpButton.setOnClickListener {
+
+        }
+        facebookSignUpButton.setOnClickListener {
+
+        }
+
+    }
+
+    private fun validateInputs(): Boolean {
+        val fullName = fullNameEditText.text.toString().trim()
+        val email = emailEditText.text.toString().trim()
+        val phone = phoneEditText.text.toString().trim()
+        val password = passwordEditText.text.toString()
+        val confirmPassword = confirmPasswordEditText.text.toString()
+        var isValid = true
+
+        // checking the full name
+        if(fullName.isEmpty() || fullName.length < MINIMUM_NAME_LENGTH){
+            isValid = false
+            fullNameInputLayout.error = "Name must be at least $MINIMUM_NAME_LENGTH characters"
+        } else {
+            fullNameInputLayout.error = null
+        }
+
+        // checking the email
+        if(!email.isEmpty() && !isValidEmail(email)){
+            isValid = false
+            emailInputLayout.error = "Email cannot be empty"
+        } else {
+            emailInputLayout.error = null
+        }
+
+        // checking the phone number
+        if(!phone.isEmpty() && phone.length < 10){
+            isValid = false
+            phoneInputLayout.error = "Phone number must be at least 10 digits"
+        } else {
+            phoneInputLayout.error = null
+        }
+
+        // checking the password
+        if(!password.isEmpty() && password.length < MINIMUM_PASSWORD_LENGTH && !isValidPassword(password)){
+            isValid = false
+            passwordInputLayout.error = "Password must be at least $MINIMUM_PASSWORD_LENGTH characters"
+        } else {
+            passwordInputLayout.error = null
+        }
+
+        // checking if the passwords match
+        if(!confirmPassword.isEmpty() && confirmPassword != password){
+            isValid = false
+            confirmPasswordInputLayout.error = "Passwords do not match"
+        } else {
+            confirmPasswordInputLayout.error = null
+        }
+
+        if(!termsCheckbox.isChecked){
+            isValid = false
+            termsCheckbox.error = "You must agree to the terms and conditions"
+        } else {
+            isValid = isValid && true
+            termsCheckbox.error = null
+        }
+
+        return isValid
+    }
+
+    private fun goToSignIn() {
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun animateViews() {
+        val signUpCard = findViewById<View>(R.id.signUpCard)
+        signUpCard.alpha = 0f
+        signUpCard.translationY = 100f
+
+        signUpCard.animate()
+            .alpha(1f)
+            .translationY(0f)
+            .setDuration(500)
+            .setStartDelay(200)
+            .start()
+    }
+
+    private fun isValidEmail(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    private fun isValidPassword(password : String): Boolean {
+        // implement a valid password check. :TODO later
+        return true
+    }
+
 }
