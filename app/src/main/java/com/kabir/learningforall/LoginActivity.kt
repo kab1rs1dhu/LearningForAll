@@ -1,4 +1,5 @@
 package com.kabir.learningforall
+import com.google.android.material.textfield.TextInputEditText
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,35 +7,40 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
+import android.view.View
+import android.widget.Toast
 import com.google.android.material.textfield.TextInputLayout
+import kotlin.toString
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var backButton: ImageButton
     private lateinit var emailInputLayout: TextInputLayout
     private lateinit var passwordInputLayout: TextInputLayout
-    private lateinit var emailEditText: TextInputLayout
-    private lateinit var passwordEditText: TextInputLayout
-    private lateinit var loginButton: ImageButton
+    private lateinit var emailEditText: TextInputEditText
+    private lateinit var passwordEditText: TextInputEditText
+    private lateinit var loginButton: MaterialButton
     private lateinit var forgotPasswordText: TextView
     private lateinit var signUpLink: TextView
     private lateinit var googleSignInButton: MaterialButton
     private lateinit var facebookSignInButton: MaterialButton
+    private var MINIMUM_PASSWORD_LENGTH: Int = 6
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         setUpViews()
         setUpClickListeners()
+        animateViews()
     }
 
     private fun setUpViews() {
         backButton = findViewById<ImageButton>(R.id.backButton)
         emailInputLayout = findViewById<TextInputLayout>(R.id.emailInputLayout)
         passwordInputLayout = findViewById<TextInputLayout>(R.id.passwordInputLayout)
-        emailEditText = findViewById<TextInputLayout>(R.id.emailEditText)
-        passwordEditText = findViewById<TextInputLayout>(R.id.passwordEditText)
-        loginButton = findViewById<ImageButton>(R.id.loginButton)
+        emailEditText = findViewById<TextInputEditText>(R.id.emailEditText)
+        passwordEditText = findViewById<TextInputEditText>(R.id.passwordEditText)
+        loginButton = findViewById<MaterialButton>(R.id.loginButton)
         forgotPasswordText = findViewById<TextView>(R.id.forgotPasswordText)
         signUpLink = findViewById<TextView>(R.id.signUpLink)
         googleSignInButton = findViewById<MaterialButton>(R.id.googleSignInButton)
@@ -54,10 +60,17 @@ class LoginActivity : AppCompatActivity() {
         signUpLink.setOnClickListener {
             goToSignUp()
         }
+        googleSignInButton.setOnClickListener {
+
+        }
+        facebookSignInButton.setOnClickListener {
+
+        }
     }
 
     private fun handleLogin() {
-
+        validateInputs()
+        Toast.makeText(this, "login simulated", Toast.LENGTH_SHORT).show()
     }
 
     private fun handleForgotPassword() {
@@ -69,6 +82,35 @@ class LoginActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
 
+    }
+
+    private fun validateInputs() {
+        val email = emailEditText.text?.toString()?.trim() ?: ""
+        val password = passwordEditText.text?.toString()?.trim() ?: ""
+        if (email.isEmpty()) {
+            emailInputLayout.error = "Email cannot be empty"
+        } else {
+            emailInputLayout.error = null
+        }
+        if (password.isEmpty() || password.length < MINIMUM_PASSWORD_LENGTH) {
+            passwordInputLayout.error = "Password cannot be empty"
+        } else {
+            passwordInputLayout.error = null
+        }
+    }
+
+
+    private fun animateViews() {
+        val loginCard = findViewById<View>(R.id.loginCard)
+        loginCard.alpha = 0f
+        loginCard.translationY = 100f
+
+        loginCard.animate()
+            .alpha(1f)
+            .translationY(0f)
+            .setDuration(500)
+            .setStartDelay(200)
+            .start()
     }
 
 }

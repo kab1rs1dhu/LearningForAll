@@ -23,7 +23,7 @@
             android:layout_marginTop="40dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_arrow_back"
-            android:tint="@color/white"
+            app:tint="@color/white"
             android:contentDescription="Back"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
