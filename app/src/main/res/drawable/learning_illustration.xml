@@ -1,0 +1,71 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="280dp"
+    android:height="280dp"
+    android:viewportWidth="280"
+    android:viewportHeight="280">
+
+    <!-- Background Circle -->
+    <path
+        android:fillColor="#E3F2FD"
+        android:pathData="M270,140 A130,130 0 1,0 10,140 A130,130 0 1,0 270,140"
+        android:alpha="0.3"/>
+
+
+    <!-- Large Book -->
+    <path
+        android:fillColor="@color/primary_blue"
+        android:pathData="M80,120 L200,120 L200,200 L80,200 Z"/>
+
+    <!-- Book Pages -->
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M85,125 L195,125 L195,195 L85,195 Z"/>
+
+    <!-- Book Spine -->
+    <path
+        android:fillColor="@color/primary_blue_dark"
+        android:pathData="M80,120 L90,120 L90,200 L80,200 Z"/>
+
+    <!-- Student Figure 1 -->
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M122,100 A12,12 0 1,0 98,100 A12,12 0 1,0 122,100"/>
+
+    <path
+        android:fillColor="@color/accent_green"
+        android:pathData="M98,115 L122,115 L120,140 L100,140 Z"/>
+
+    <!-- Student Figure 2 -->
+    <path
+        android:fillColor="@color/accent_purple"
+        android:pathData="M55,180 A5,5 0 1,0 45,180 A5,5 0 1,0 55,180"
+        android:alpha="0.7"/>
+
+
+    <path
+        android:fillColor="@color/accent_purple"
+        android:pathData="M158,115 L182,115 L180,140 L160,140 Z"/>
+
+    <!-- Floating Elements -->
+    <path
+        android:fillColor="@color/accent_orange"
+        android:pathData="M64,80 A4,4 0 1,0 56,80 A4,4 0 1,0 64,80"
+        android:alpha="0.7"/>
+
+    <path
+        android:fillColor="@color/accent_green"
+        android:pathData="M223,90 A3,3 0 1,0 217,90 A3,3 0 1,0 223,90"
+        android:alpha="0.7"/>
+
+    <path
+        android:fillColor="@color/accent_purple"
+        android:pathData="M55,180 A5,5 0 1,0 45,180 A5,5 0 1,0 55,180"
+        android:alpha="0.7"/>
+
+
+    <!-- Stars -->
+    <path
+        android:fillColor="@color/accent_orange"
+        android:pathData="M230,160 L232,166 L238,166 L233,170 L235,176 L230,172 L225,176 L227,170 L222,166 L228,166 Z"
+        android:alpha="0.8"/>
+</vector>

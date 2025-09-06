@@ -1,0 +1,45 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
+    <!-- Book Base -->
+    <path
+        android:fillColor="@color/primary_blue"
+        android:pathData="M10,12 L38,12 L38,40 L10,40 Z"/>
+
+    <!-- Book Pages -->
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M12,14 L36,14 L36,38 L12,38 Z"/>
+
+    <!-- Book Spine -->
+    <path
+        android:fillColor="@color/primary_blue_dark"
+        android:pathData="M10,12 L14,12 L14,40 L10,40 Z"/>
+
+    <!-- Graduation Cap -->
+    <path
+        android:fillColor="@color/accent_orange"
+        android:pathData="M20,8 L28,8 L30,10 L18,10 Z"/>
+
+    <!-- Cap Tassel -->
+    <path
+        android:fillColor="@color/accent_orange"
+        android:pathData="M31,12 A1,1 0 1,0 29,12 A1,1 0 1,0 31,12"/>
+
+    <!-- Text Lines -->
+    <path
+        android:fillColor="@color/medium_gray"
+        android:strokeWidth="1"
+        android:pathData="M16,18 L32,18"/>
+    <path
+        android:fillColor="@color/medium_gray"
+        android:strokeWidth="1"
+        android:pathData="M16,22 L30,22"/>
+    <path
+        android:fillColor="@color/medium_gray"
+        android:strokeWidth="1"
+        android:pathData="M16,26 L28,26"/>
+</vector>
