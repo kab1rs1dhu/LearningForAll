@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "835140493273",
+    "project_id": "learning-for-all-bc49e",
+    "storage_bucket": "learning-for-all-bc49e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:835140493273:android:d50b1af5ecd2c027b6c3c8",
+        "android_client_info": {
+          "package_name": "com.kabir.learningforall"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqt2hw2mg7xn4hW7RY__Tz-sosqTIfgp8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

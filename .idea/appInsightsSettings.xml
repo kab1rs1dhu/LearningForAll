@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.kabir.learningforall" />
+                  <option name="mobileSdkAppId" value="1:835140493273:android:d50b1af5ecd2c027b6c3c8" />
+                  <option name="projectId" value="learning-for-all-bc49e" />
+                  <option name="projectNumber" value="835140493273" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

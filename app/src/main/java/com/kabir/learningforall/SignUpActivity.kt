@@ -2,16 +2,18 @@ package com.kabir.learningforall
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+
 
 class SignUpActivity : AppCompatActivity() {
 
@@ -35,9 +37,17 @@ class SignUpActivity : AppCompatActivity() {
     private val MINIMUM_NAME_LENGTH: Int = 2
     private val MINIMUM_PASSWORD_LENGTH: Int = 6
 
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var firestore: FirebaseFirestore
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
+
+        firebaseAuth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
 
         setUpViews()
         setUpClickListeners()
@@ -70,6 +80,9 @@ class SignUpActivity : AppCompatActivity() {
         }
         signInLink.setOnClickListener {
             goToSignIn()
+        }
+        signUpButton.setOnClickListener {
+            handleSignUp()
         }
         termsCheckbox.setOnCheckedChangeListener { _, _ ->
             signUpButton.isEnabled = validateInputs()
@@ -141,6 +154,83 @@ class SignUpActivity : AppCompatActivity() {
         }
 
         return isValid
+    }
+
+    private fun handleSignUp() {
+        val fullName = fullNameEditText.text.toString().trim()
+        val email = emailEditText.text.toString().trim()
+        val phone = phoneEditText.text.toString().trim()
+        val password = passwordEditText.text.toString()
+
+        signUpButton.isEnabled = false
+
+        if (!validateInputs()) {
+            signUpButton.isEnabled = true
+            return
+        } else {
+            firebaseAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        val user = firebaseAuth.currentUser
+                        user?.let {
+                            createUserDocument(it.uid, fullName, email, phone)
+                        }
+                    } else {
+                        signUpButton.isEnabled = true
+                        signUpButton.text = "Create Account"
+                        val errorMessage = when (task.exception?.message) {
+                            "The email address is already in use by another account." ->
+                                "Email is already registered. Please use a different email."
+
+                            "The email address is badly formatted." ->
+                                "Please enter a valid email address."
+
+                            "The given password is invalid. [ Password should be at least 6 characters ]" ->
+                                "Password must be at least 6 characters long."
+
+                            else -> "Registration failed. Please try again."
+                        }
+                        Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
+                    }
+
+                }
+        }
+    }
+
+    private fun createUserDocument(userId: String, fullName: String, email: String, phone: String) {
+        val userMap = hashMapOf(
+            "fullName" to fullName,
+            "email" to email,
+            "phoneNumber" to phone,
+            "createdAt" to com.google.firebase.Timestamp.now(),
+            "lastLoginAt" to com.google.firebase.Timestamp.now()
+        )
+
+        firestore.collection("users").document(userId).set(userMap)
+            .addOnCompleteListener {
+                signUpButton.isEnabled = true
+                signUpButton.text = "Create Account"
+                Toast.makeText(this, "User profile created successfully!", Toast.LENGTH_LONG).show()
+                // navigate to the dashboard now
+            }
+            .addOnFailureListener { e ->
+                signUpButton.isEnabled = true
+                signUpButton.text = "Create Account"
+                Toast.makeText(this, "Failed to create user profile: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+
+        firestore.collection("users").document(userId)
+            .set(userMap)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Registration successful!", Toast.LENGTH_LONG).show()
+                goToSignIn()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Failed to create user profile: ${e.message}", Toast.LENGTH_LONG).show()
+                signUpButton.isEnabled = true
+                signUpButton.text = "Create Account"
+            }
+
     }
 
     private fun goToSignIn() {
