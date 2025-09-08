@@ -174,6 +174,7 @@ class SignUpActivity : AppCompatActivity() {
                         val user = firebaseAuth.currentUser
                         user?.let {
                             createUserDocument(it.uid, fullName, email, phone)
+                            goToSignIn()
                         }
                     } else {
                         signUpButton.isEnabled = true

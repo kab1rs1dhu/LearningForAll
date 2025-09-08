@@ -1,0 +1,28 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
+    <!-- Party Hat -->
+    <path
+        android:fillColor="@color/accent_purple"
+        android:pathData="M24,8 L28,20 L20,20 Z"/>
+
+    <!-- Confetti -->
+    <path android:fillColor="#FF9800" android:pathData="M17,12 a2,2 0 1,0 -4,0 a2,2 0 1,0 4,0"/>
+    <path android:fillColor="#4CAF50" android:pathData="M34.5,15 a1.5,1.5 0 1,0 -3,0 a1.5,1.5 0 1,0 3,0"/>
+    <path android:fillColor="#E91E63" android:pathData="M40,25 a2,2 0 1,0 -4,0 a2,2 0 1,0 4,0"/>
+    <path android:fillColor="#2196F3" android:pathData="M11.5,25 a1.5,1.5 0 1,0 -3,0 a1.5,1.5 0 1,0 3,0"/>
+
+    <!-- Trophy -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M18,25 L30,25 L28,35 L20,35 Z"/>
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M22,35 L26,35 L26,38 L22,38 Z"/>
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M22,35 L26,35 L26,38 L22,38 Z"/>
+</vector>

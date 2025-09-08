@@ -1,0 +1,38 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Rainbow arcs -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#FF5722"
+        android:strokeWidth="2"
+        android:pathData="M4,12 Q12,4 20,12"/>
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#FF9800"
+        android:strokeWidth="2"
+        android:pathData="M5,12 Q12,6 19,12"/>
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#FFEB3B"
+        android:strokeWidth="2"
+        android:pathData="M6,12 Q12,8 18,12"/>
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#4CAF50"
+        android:strokeWidth="2"
+        android:pathData="M7,12 Q12,9 17,12"/>
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#2196F3"
+        android:strokeWidth="2"
+        android:pathData="M8,12 Q12,10 16,12"/>
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#9C27B0"
+        android:strokeWidth="2"
+        android:pathData="M9,12 Q12,10.5 15,12"/>
+</vector>

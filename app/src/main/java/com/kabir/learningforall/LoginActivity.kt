@@ -10,7 +10,9 @@ import com.google.android.material.button.MaterialButton
 import android.view.View
 import android.widget.Toast
 import com.google.android.material.textfield.TextInputLayout
-import kotlin.toString
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+
 
 class LoginActivity : AppCompatActivity() {
 
@@ -26,9 +28,16 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var facebookSignInButton: MaterialButton
     private var MINIMUM_PASSWORD_LENGTH: Int = 6
 
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var firestore: FirebaseFirestore
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        firebaseAuth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
+
         setUpViews()
         setUpClickListeners()
         animateViews()
@@ -70,7 +79,53 @@ class LoginActivity : AppCompatActivity() {
 
     private fun handleLogin() {
         validateInputs()
-        Toast.makeText(this, "login simulated", Toast.LENGTH_SHORT).show()
+        val email: String = emailEditText.text?.toString()?.trim()!!
+        val password: String = passwordEditText.text?.toString()?.trim()!!
+
+        firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this) { task->
+            if(task.isSuccessful){
+                val currentUser = firebaseAuth.currentUser
+                if (currentUser != null) {
+                    updateLastLoginTime(currentUser.uid)
+                }
+
+                loginButton.isEnabled = true
+                loginButton.text = "Sign in"
+
+                Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
+
+            }
+            else{
+                loginButton.isEnabled = true
+                loginButton.text = "Sign In"
+
+                val errorMessage = when (task.exception?.message) {
+                    "There is no user record corresponding to this identifier. The user may have been deleted." ->
+                        "No account found with this email address."
+                    "The password is invalid or the user does not have a password." ->
+                        "Incorrect password. Please try again."
+                    "The email address is badly formatted." ->
+                        "Please enter a valid email address."
+                    "A network error (such as timeout, interrupted connection or unreachable host) has occurred." ->
+                        "Network error. Please check your connection."
+                    else -> "Login failed. Please check your credentials."
+                }
+
+                Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun updateLastLoginTime(userId: String) {
+        firestore.collection("users").document(userId)
+            .update("lastLoginAt", com.google.firebase.Timestamp.now())
+            .addOnSuccessListener {
+                // Login time updated successfully
+            }
+            .addOnFailureListener { e ->
+                // Failed to update login time, but login was successful
+                // This is not critical, so we don't show an error to the user
+            }
     }
 
     private fun handleForgotPassword() {
