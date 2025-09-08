@@ -94,6 +94,8 @@ class LoginActivity : AppCompatActivity() {
 
                 Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
 
+                startDashboardActivity(currentUser)
+
             }
             else{
                 loginButton.isEnabled = true
@@ -114,6 +116,13 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    private fun startDashboardActivity(currentUser: com.google.firebase.auth.FirebaseUser?) {
+        val intent:Intent? = Intent(this, DashboardActivity::class.java)
+        intent?.putExtra("name", currentUser?.displayName)
+        startActivity(intent)
+        finish()
     }
 
     private fun updateLastLoginTime(userId: String) {
