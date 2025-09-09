@@ -2,6 +2,7 @@ package com.kabir.learningforall
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
@@ -37,6 +38,8 @@ class SignUpActivity : AppCompatActivity() {
     private lateinit var facebookSignUpButton: MaterialButton
     private val MINIMUM_NAME_LENGTH: Int = 2
     private val MINIMUM_PASSWORD_LENGTH: Int = 6
+
+    private val tag = "SignUpActivity"
 
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
@@ -158,6 +161,14 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun handleSignUp() {
+
+        if(!termsCheckbox.isChecked){
+            termsCheckbox.error = "You must agree to the terms and conditions"
+            return
+        } else {
+            termsCheckbox.error = null
+        }
+
         val fullName = fullNameEditText.text.toString().trim()
         val email = emailEditText.text.toString().trim()
         val phone = phoneEditText.text.toString().trim()
@@ -166,37 +177,38 @@ class SignUpActivity : AppCompatActivity() {
         signUpButton.isEnabled = false
 
         if (!validateInputs()) {
+            Log.d(tag, "Input validation failed")
             signUpButton.isEnabled = true
             return
-        } else {
-            firebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        val user = firebaseAuth.currentUser
-                        user?.let {
-                            createUserDocument(it.uid, fullName, email, phone)
-                            goToSignIn()
-                        }
-                    } else {
-                        signUpButton.isEnabled = true
-                        signUpButton.text = "Create Account"
-                        val errorMessage = when (task.exception?.message) {
-                            "The email address is already in use by another account." ->
-                                "Email is already registered. Please use a different email."
-
-                            "The email address is badly formatted." ->
-                                "Please enter a valid email address."
-
-                            "The given password is invalid. [ Password should be at least 6 characters ]" ->
-                                "Password must be at least 6 characters long."
-
-                            else -> "Registration failed. Please try again."
-                        }
-                        Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
-                    }
-
-                }
         }
+
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val user = firebaseAuth.currentUser
+                    user?.let {
+                        createUserDocument(it.uid, fullName, email, phone)
+                        goToSignIn()
+                    }
+                } else {
+                    signUpButton.isEnabled = true
+                    signUpButton.text = "Create Account"
+                    val errorMessage = when (task.exception?.message) {
+                        "The email address is already in use by another account." ->
+                            "Email is already registered. Please use a different email."
+
+                        "The email address is badly formatted." ->
+                            "Please enter a valid email address."
+
+                        "The given password is invalid. [ Password should be at least 6 characters ]" ->
+                            "Password must be at least 6 characters long."
+
+                        else -> "Registration failed. Please try again."
+                    }
+                    Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
+                }
+
+            }
     }
 
     private fun createUserDocument(userId: String, fullName: String, email: String, phone: String) {
