@@ -3,6 +3,7 @@ import com.google.android.material.textfield.TextInputEditText
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -30,6 +31,8 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
+    
+    private val tag = "LoginActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +57,7 @@ class LoginActivity : AppCompatActivity() {
         signUpLink = findViewById<TextView>(R.id.signUpLink)
         googleSignInButton = findViewById<MaterialButton>(R.id.googleSignInButton)
         facebookSignInButton = findViewById<MaterialButton>(R.id.facebookSignInButton)
+
     }
 
     private fun setUpClickListeners() {
@@ -78,91 +82,183 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun handleLogin() {
-        validateInputs()
-        val email: String = emailEditText.text?.toString()?.trim()!!
-        val password: String = passwordEditText.text?.toString()?.trim()!!
 
-        firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this) { task->
-            if(task.isSuccessful){
-                val currentUser = firebaseAuth.currentUser
-                if (currentUser != null) {
-                    updateLastLoginTime(currentUser.uid)
+        val email: String = emailEditText.text?.toString()?.trim() ?: ""
+        val password: String = passwordEditText.text?.toString()?.trim() ?: ""
+
+        Log.d(tag, "Email entered: '$email'")
+        Log.d(tag, "Password length: ${password.length}")
+        Log.d(tag, "Password (first 3 chars): ${password}")
+
+        // before logging in, validate inputs
+        if (!validateInputs(email, password)) {
+            Log.w(tag, "Input validation failed - stopping login attempt")
+            return
+        }
+
+        Log.d(tag, "Input validation passed")
+
+        // Disable button and show loading state
+        loginButton.isEnabled = false
+        loginButton.text = "Signing In..."
+
+        Log.d(tag, "Starting Firebase signInWithEmailAndPassword...")
+
+        firebaseAuth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                Log.d(tag, "Firebase signInWithEmailAndPassword completed")
+                Log.d(tag, "Task successful: ${task.isSuccessful}")
+
+                if (task.isSuccessful) {
+                    Log.d(tag, "✅ LOGIN SUCCESS!")
+                    val currentUser = firebaseAuth.currentUser
+                    Log.d(tag, "Current user UID: ${currentUser?.uid}")
+                    Log.d(tag, "Current user email: ${currentUser?.email}")
+
+                    if (currentUser != null) {
+                        updateLastLoginTime(currentUser.uid)
+                    }
+
+                    Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
+                    startDashboardActivity(currentUser)
+
+                } else {
+                    Log.e(tag, "❌ LOGIN FAILED")
+                    Log.e(tag, "Exception: ${task.exception}")
+                    Log.e(tag, "Exception message: '${task.exception?.message}'")
+                    Log.e(tag, "Exception type: ${task.exception?.javaClass?.simpleName}")
+
+                    // Log the full stack trace
+                    task.exception?.printStackTrace()
+
+                    // Re-enable button and restore text
+                    loginButton.isEnabled = true
+                    loginButton.text = "Sign In"
+
+                    val errorMessage = when (task.exception?.message) {
+                        "There is no user record corresponding to this identifier. The user may have been deleted." -> {
+                            Log.d(tag, "Error type: No user found")
+                            "No account found with this email address."
+                        }
+                        "The password is invalid or the user does not have a password." -> {
+                            Log.d(tag, "Error type: Invalid password")
+                            "Incorrect password. Please try again."
+                        }
+                        "The email address is badly formatted." -> {
+                            Log.d(tag, "Error type: Bad email format")
+                            "Please enter a valid email address."
+                        }
+                        else -> {
+                            if (task.exception?.message?.contains("network", ignoreCase = true) == true) {
+                                Log.d(tag, "Error type: Network error")
+                                "Network error. Please check your connection."
+                            } else {
+                                Log.d(tag, "Error type: Unknown - ${task.exception?.message}")
+                                "Login failed: ${task.exception?.message ?: "Unknown error"}"
+                            }
+                        }
+                    }
+
+                    Log.d(tag, "Showing error message: $errorMessage")
+                    Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
                 }
-
-                loginButton.isEnabled = true
-                loginButton.text = "Sign in"
-
-                Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
-
-                startDashboardActivity(currentUser)
-
             }
-            else{
+            .addOnSuccessListener { authResult ->
+                Log.d(tag, "✅ addOnSuccessListener called")
+                Log.d(tag, "AuthResult user: ${authResult.user?.email}")
+            }
+            .addOnFailureListener { exception ->
+                Log.e(tag, "❌ addOnFailureListener called")
+                Log.e(tag, "Failure exception: $exception")
+                Log.e(tag, "Failure message: ${exception.message}")
+                exception.printStackTrace()
+
                 loginButton.isEnabled = true
                 loginButton.text = "Sign In"
-
-                val errorMessage = when (task.exception?.message) {
-                    "There is no user record corresponding to this identifier. The user may have been deleted." ->
-                        "No account found with this email address."
-                    "The password is invalid or the user does not have a password." ->
-                        "Incorrect password. Please try again."
-                    "The email address is badly formatted." ->
-                        "Please enter a valid email address."
-                    "A network error (such as timeout, interrupted connection or unreachable host) has occurred." ->
-                        "Network error. Please check your connection."
-                    else -> "Login failed. Please check your credentials."
-                }
-
-                Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Login failed: ${exception.message}", Toast.LENGTH_LONG).show()
             }
-        }
     }
 
     private fun startDashboardActivity(currentUser: com.google.firebase.auth.FirebaseUser?) {
-        val intent:Intent? = Intent(this, DashboardActivity::class.java)
-        intent?.putExtra("name", currentUser?.displayName)
-        startActivity(intent)
-        finish()
+        Log.d(tag, "Starting dashboard activity...")
+        Log.d(tag, "User: ${currentUser?.email}")
+
+        try {
+            val intent = Intent(this, DashboardActivity::class.java)
+            intent.putExtra("name", currentUser?.displayName)
+            Log.d(tag, "Intent created, starting activity...")
+            startActivity(intent)
+            Log.d(tag, "Activity started successfully")
+            finish()
+        } catch (e: Exception) {
+            Log.e(tag, "❌ Error starting dashboard activity", e)
+            Toast.makeText(this, "Error opening dashboard: ${e.message}", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun updateLastLoginTime(userId: String) {
+        Log.d(tag, "Updating last login time for user: $userId")
         firestore.collection("users").document(userId)
             .update("lastLoginAt", com.google.firebase.Timestamp.now())
             .addOnSuccessListener {
-                // Login time updated successfully
+                Log.d(tag, "Last login time updated successfully")
             }
             .addOnFailureListener { e ->
-                // Failed to update login time, but login was successful
-                // This is not critical, so we don't show an error to the user
+                Log.w(tag, "Failed to update last login time", e)
             }
     }
 
     private fun handleForgotPassword() {
-
+        Log.d(tag, "Forgot password clicked")
+        // TODO: Implement forgot password functionality
     }
 
     private fun goToSignUp() {
-        val intent:Intent? = Intent(this, SignUpActivity::class.java)
+        Log.d(tag, "Going to sign up")
+        val intent = Intent(this, SignUpActivity::class.java)
         startActivity(intent)
         finish()
-
     }
 
-    private fun validateInputs() {
-        val email = emailEditText.text?.toString()?.trim() ?: ""
-        val password = passwordEditText.text?.toString()?.trim() ?: ""
-        if (email.isEmpty()) {
+    private fun validateInputs(email: String, password: String): Boolean {
+        Log.d(tag, "Validating inputs...")
+        var isValid = true
+
+        if(email.isEmpty()){
+            Log.d(tag, "Validation failed: Email is empty")
+            isValid = false
             emailInputLayout.error = "Email cannot be empty"
+        } else if(!isValidEmail(email)){
+            Log.d(tag, "Validation failed: Email format invalid")
+            isValid = false
+            emailInputLayout.error = "Please enter a valid email address"
         } else {
+            Log.d(tag, "Email validation passed")
             emailInputLayout.error = null
         }
-        if (password.isEmpty() || password.length < MINIMUM_PASSWORD_LENGTH) {
+
+        if (password.isEmpty()) {
+            Log.d(tag, "Validation failed: Password is empty")
             passwordInputLayout.error = "Password cannot be empty"
+            isValid = false
+        } else if (password.length < MINIMUM_PASSWORD_LENGTH) {
+            Log.d(tag, "Validation failed: Password too short (${password.length} chars)")
+            passwordInputLayout.error = "Password must be at least $MINIMUM_PASSWORD_LENGTH characters"
+            isValid = false
         } else {
+            Log.d(tag, "Password validation passed")
             passwordInputLayout.error = null
         }
+
+        Log.d(tag, "Validation result: $isValid")
+        return isValid
     }
 
+    private fun isValidEmail(email: String): Boolean {
+        val isValid = android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        Log.d(tag, "Email '$email' is valid: $isValid")
+        return isValid
+    }
 
     private fun animateViews() {
         val loginCard = findViewById<View>(R.id.loginCard)
@@ -176,5 +272,4 @@ class LoginActivity : AppCompatActivity() {
             .setStartDelay(200)
             .start()
     }
-
 }

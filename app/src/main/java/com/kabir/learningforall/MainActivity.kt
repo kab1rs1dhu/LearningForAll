@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         signUpButton.setOnClickListener {
             animateButtonClick(it) {
                 val intent: Intent? = Intent(this, SignUpActivity::class.java)
+                intent?.putExtra("key1", "hello from main activity")
                 startActivity(intent)
             }
         }
