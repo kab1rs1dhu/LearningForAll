@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- Add these permissions for Firebase -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -15,6 +14,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LearningForAll">
+        <activity
+            android:name=".TopicQuizActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Class1Activity"
+            android:exported="false" />
         <activity
             android:name=".DashboardActivity"
             android:exported="false" />
