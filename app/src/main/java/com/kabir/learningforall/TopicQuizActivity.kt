@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import com.google.android.material.button.MaterialButton
+import java.lang.Thread.sleep
 
 class TopicQuizActivity : AppCompatActivity() {
 
@@ -16,11 +17,15 @@ class TopicQuizActivity : AppCompatActivity() {
     private var currentQuestionIndex = 0
     private var score = 0
     private lateinit var questions: List<QuizQuestion>
+    private lateinit var scoreTextView: TextView
     private var selectedAnswer = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_topic_quiz)
+
+        scoreTextView = findViewById(R.id.scoreTextView)
+        scoreTextView.visibility = TextView.INVISIBLE
 
         currentTopicNumber = intent.getIntExtra("topic_number", 1)
         setupQuiz()
@@ -111,6 +116,13 @@ class TopicQuizActivity : AppCompatActivity() {
 
     private fun finishQuiz() {
         val percentage = (score * 100) / questions.size
+
+        scoreTextView.visibility = TextView.VISIBLE
+
+        scoreTextView.text = "You scored $score out of ${questions.size} ($percentage%)"
+
+
+        sleep(100000) // Pause to let user see final score
 
         // Save progress
         val prefs = getSharedPreferences("class1_progress", 0)

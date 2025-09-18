@@ -16,6 +16,8 @@ class Class1Activity : AppCompatActivity() {
 
     private lateinit var topicsRecyclerView: RecyclerView
     private lateinit var startLearningButton: MaterialButton
+    private var score = 0
+    private var totalNumberOfQuestion = 0
 
     // All 29 topics with actual Class 1 content
     private val allTopics = listOf(
