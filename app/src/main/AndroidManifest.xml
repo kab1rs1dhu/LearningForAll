@@ -15,6 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LearningForAll">
         <activity
+            android:name=".TopicLearningActivity"
+            android:exported="false" />
+        <activity
             android:name=".TopicQuizActivity"
             android:exported="false" />
         <activity
